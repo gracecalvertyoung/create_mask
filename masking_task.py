@@ -194,8 +194,9 @@ def findClusters(A, disp_axes=None):
             xy = points[class_member_mask & core_samples_mask]
             # print("Centroid for cluster {}: {}".format(k, xy.mean(axis=0)))
             disp_axes.set_aspect('equal')
-            disp_axes.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-                      markeredgecolor='k', markersize=14)
+            disp_axes.plot(xy[:, 0], xy[:, 1], 'o',
+                           markerfacecolor=tuple(colors[0]), # changed from tuple(col)
+                      markeredgecolor='none', markersize=14) 
     if not (disp_axes is None):
         disp_axes.set_title('DBSCAN result')
 
@@ -377,8 +378,12 @@ def create_mask(filename, win=(5, 10), nStdev=1, do_write_mask=True,
         writeMask(filename, mask)
 
     if do_write_imgs:
-        # save masked image
-        ax3.imshow(origImg * mask, cmap='gray')
+        # make masked image be white where not in mask
+        mask_display = origImg * mask
+        mask_display[mask_display == 0] = 255
+
+        # save masked image                       
+        ax3.imshow(mask_display, cmap='gray')
         ax3.set_title('Masked image')
 
         # save plots
@@ -394,13 +399,13 @@ def create_mask(filename, win=(5, 10), nStdev=1, do_write_mask=True,
 
 def main():
     # cycle through files
-    filenameCore = os.getcwd() + "/test_data"
+    filenameCore = os.getcwd() + "/test_data_to_do"
     for folder in os.listdir(filenameCore):
         if not folder == ".DS_Store":
             dir_str = filenameCore + "/" + folder
             for image in os.listdir(dir_str):
                 fn = dir_str + "/" + image
-                create_mask(fn, do_write_mask=False, do_write_imgs=False)
+                create_mask(fn, do_write_mask=False, do_write_imgs=True)
     return
 
 
